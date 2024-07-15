@@ -18,7 +18,6 @@ class CoinCell: UITableViewCell {
         image.contentMode = .scaleAspectFit
         image.image = UIImage(systemName: "questionmark")
         image.tintColor = .black
-        image.backgroundColor = .systemBlue
         return image
     }()
     
@@ -41,14 +40,20 @@ class CoinCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     func configure(with coin: Coin) {
         self.coin = coin
-        
         coinName.text = coin.name
+        let request = URLRequest(url: coin.logoURL!,cachePolicy: .useProtocolCachePolicy)
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let data = data {
+                DispatchQueue.main.async { [weak self] in
+                    
+                    self?.coinLogo.image = UIImage(data: data)
+                }
+            }
+        }
+        task.resume()
     }
-    
-    
     
     private func setupUI() {
         contentView.addSubview(coinLogo)

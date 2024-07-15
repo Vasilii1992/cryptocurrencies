@@ -14,6 +14,9 @@ struct Coin {
     let cmc_rank: Int
     let quote: Quote
     
+    var logoURL: URL? {
+        return URL(string: "https://s2.coinmarketcap.com/static/img/coins/200x200/1.png")
+    }
     
     struct Quote {
         let CAD: CAD

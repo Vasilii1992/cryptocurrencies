@@ -74,6 +74,12 @@ extension HomeController: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // чтоб при выборе ячейки она загоралась, а потом переставала
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        let coin = coins[indexPath.row]
+        let viewModel = ViewCryptoControllerViewModel(coin)
+        let vc = ViewCryptoController(viewModel)
+        navigationController?.pushViewController(vc, animated: true)
+        
     }
     
 }

@@ -9,7 +9,7 @@ import UIKit
 
 class ViewCryptoController: UIViewController {
     
-    private let coin: Coin
+    let viewModel: ViewCryptoControllerViewModel
     
     private let scrollView: UIScrollView = {
        let scroll = UIScrollView()
@@ -77,14 +77,8 @@ class ViewCryptoController: UIViewController {
         return vStack
     }()
     
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-    }
-    
-    init(coin: Coin) {
-        self.coin = coin
+    init(_ viewModel: ViewCryptoControllerViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -93,8 +87,77 @@ class ViewCryptoController: UIViewController {
     }
     
     
-    
-    
-    
-    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        
+        view.backgroundColor = .systemBackground
+        navigationItem.title = viewModel.coin.name
+        navigationController?.navigationBar.topItem?.backBarButtonItem =
+        UIBarButtonItem(title: "Back", style: .done, target: nil, action: nil)
+        
+        
+            // description переводит в string
+        rankLabel.text = viewModel.rankLabel
+        priceLabel.text = viewModel.priceLabel
+        marketCapLabel.text = viewModel.marketCapLabel
+        maxSupplyLabel.text = viewModel.maxSupplyLabel
+        
+
+        viewModel.loadImage { [weak self] image in
+            DispatchQueue.main.async {
+                self?.coinLogo.image = image
+
+            }
+        }
+    }
+
+    private func setupUI() {
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(coinLogo)
+        contentView.addSubview(vStack)
+        
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        coinLogo.translatesAutoresizingMaskIntoConstraints = false
+        vStack.translatesAutoresizingMaskIntoConstraints = false
+        
+//        let height = contentView.heightAnchor.constraint(equalTo: scrollView.heightAnchor)
+//        height.priority = UILayoutPriority(1)
+//        height.isActive = true
+
+        
+        NSLayoutConstraint.activate([
+        
+            scrollView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+            
+//            scrollView.heightAnchor.constraint(equalTo: view.layoutMarginsGuide.heightAnchor),
+//            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+        
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+
+
+            coinLogo.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            coinLogo.topAnchor.constraint(equalTo: contentView.topAnchor,constant: 20),
+            coinLogo.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            coinLogo.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            coinLogo.heightAnchor.constraint(equalToConstant: 200),
+
+            
+            vStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            vStack.topAnchor.constraint(equalTo: coinLogo.bottomAnchor,constant: 20),
+            vStack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            vStack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            vStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+
+        ])
+    }
 }
