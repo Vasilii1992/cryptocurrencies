@@ -17,19 +17,19 @@ class ViewCryptoControllerViewModel {
     }
     
     var rankLabel: String {
-        return "Rank: \(coin.cmc_rank)"
+        return "Rank: \(coin.rank)"
     }
     
     var priceLabel: String {
-        return "Price: $\(coin.quote.CAD.price) CAD"
+        return "Price: $\(coin.pricingData.CAD.price) CAD"
     }
     
     var marketCapLabel: String {
-        return "Market Cap: $\(coin.quote.CAD.market_cap)"
+        return "Market Cap: $\(coin.pricingData.CAD.market_cap)"
     }
     
     var maxSupplyLabel: String {
-        if let maxSupply = coin.max_supply {
+        if let maxSupply = coin.maxSupply {
             return "Max Supply: \(maxSupply)"
         } else {
             return "Don't have some information about that."
