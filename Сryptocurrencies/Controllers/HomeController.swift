@@ -11,6 +11,8 @@ class HomeController: UIViewController {
     
     private let viewModel: HomeControllerViewModel
     
+    private let searchController = UISearchController(searchResultsController: nil)
+    
     private let tableView: UITableView = {
        let table = UITableView()
         table.backgroundColor = .systemBackground
@@ -32,7 +34,7 @@ class HomeController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setupSearchController()
         setupUI()
         
         tableView.delegate = self
@@ -87,13 +89,38 @@ class HomeController: UIViewController {
         
         
         ])
+    }
+    
+    private func setupSearchController() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Cryptos"
         
+        self.navigationItem.searchController = searchController
+        self.definesPresentationContext = false
+        self.navigationItem.hidesSearchBarWhenScrolling = false
+        searchController.searchBar.delegate = self
         
+        searchController.searchBar.showsBookmarkButton = true
+        searchController.searchBar.setImage(UIImage(systemName: "star"), for: .bookmark, state: .normal)
+    }
+}
+
+extension HomeController: UISearchResultsUpdating, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        self.viewModel.setInSearchMode(searchController)
+        self.viewModel.updateSearchController(searchBarText: searchController.searchBar.text)
+    }
+    
+    func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
+        print("НАЖАЛИ НА КНОПКУ")
     }
     
 }
 
 extension HomeController: UITableViewDelegate,UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.coins.count
     }
@@ -102,7 +129,7 @@ extension HomeController: UITableViewDelegate,UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CoinCell.identifire, for: indexPath) as? CoinCell else {
             return UITableViewCell()
         }
-        
+
         let coin = viewModel.coins[indexPath.row]
         cell.configure(with: coin)
         return cell
@@ -121,5 +148,4 @@ extension HomeController: UITableViewDelegate,UITableViewDataSource {
         navigationController?.pushViewController(vc, animated: true)
         
     }
-    
 }
