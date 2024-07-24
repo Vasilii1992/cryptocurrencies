@@ -35,22 +35,22 @@ class ViewCryptoControllerViewModel {
             return "Don't have some information about that."
         }
     }
-        
-     func loadImage(completion: @escaping (UIImage?) -> Void) {
-        let url = coin.logoURL
-        let request = URLRequest(url: url!,cachePolicy: .useProtocolCachePolicy)
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let data = data, let image = UIImage(data: data) {
-                   print("Удалось получить изображение")
-                completion(image)
-                    
-            } else {
-                print("Нет изображения")
-                completion(nil)
-            }
-        }
-        task.resume()
-    }
+    // это версия загрузки изображения без SDWebImage
+//     func loadImage(completion: @escaping (UIImage?) -> Void) {
+//        let url = coin.logoURL
+//        let request = URLRequest(url: url!,cachePolicy: .useProtocolCachePolicy)
+//        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+//            if let data = data, let image = UIImage(data: data) {
+//                   print("Удалось получить изображение")
+//                completion(image)
+//                    
+//            } else {
+//                print("Нет изображения")
+//                completion(nil)
+//            }
+//        }
+//        task.resume()
+//    }
     
     
     

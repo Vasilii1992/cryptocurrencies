@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class ViewCryptoController: UIViewController {
     
@@ -103,13 +104,14 @@ class ViewCryptoController: UIViewController {
         marketCapLabel.text = viewModel.marketCapLabel
         maxSupplyLabel.text = viewModel.maxSupplyLabel
         
-
-        viewModel.loadImage { [weak self] image in
-            DispatchQueue.main.async {
-                self?.coinLogo.image = image
-
-            }
-        }
+// это версия загрузки изображения без SDWebImage
+//        viewModel.loadImage { [weak self] image in
+//            DispatchQueue.main.async {
+//                self?.coinLogo.image = image
+//
+//            }
+//        }
+        self.coinLogo.sd_setImage(with: viewModel.coin.logoURL)
     }
 
     private func setupUI() {
