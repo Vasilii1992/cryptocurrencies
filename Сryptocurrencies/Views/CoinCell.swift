@@ -43,16 +43,25 @@ class CoinCell: UITableViewCell {
     func configure(with coin: Coin) {
         self.coin = coin
         coinName.text = coin.name
-        let request = URLRequest(url: coin.logoURL!,cachePolicy: .useProtocolCachePolicy)
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let data = data {
-                DispatchQueue.main.async { [weak self] in
-                    
-                    self?.coinLogo.image = UIImage(data: data)
+        DispatchQueue.global().async { [weak self] in
+            
+            let request = URLRequest(url: coin.logoURL!,cachePolicy: .useProtocolCachePolicy)
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    DispatchQueue.main.async {
+                        
+                        self?.coinLogo.image = UIImage(data: data)
+                    }
                 }
             }
+            task.resume()
         }
-        task.resume()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        coinName.text = nil
+        coinLogo.image = nil
     }
     
     private func setupUI() {

@@ -62,7 +62,7 @@ enum Endpoint {
     private var httpMethod: String {
         
         switch self {
-        case .fetchCoins(let url):
+        case .fetchCoins:
             return HTTP.Method.get.rawValue
         }
     }

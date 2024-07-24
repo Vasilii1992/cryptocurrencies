@@ -9,11 +9,7 @@ import UIKit
 
 class HomeController: UIViewController {
     
-   private let coins: [Coin] = [
-    Coin(id: 1, name: "Bitcoin", maxSupply: 200, rank: 1, pricingData: PricingData(CAD: CAD(price: 50000, market_cap: 1_000_000))),
-    Coin(id: 2, name: "Ethereum", maxSupply: nil, rank: 2, pricingData: PricingData(CAD: CAD(price: 2000, market_cap: 500_000))),
-    Coin(id: 3, name: "Monero", maxSupply: nil, rank: 3, pricingData: PricingData(CAD: CAD(price: 200, market_cap: 250_000)))
-    ]
+    private let viewModel: HomeControllerViewModel
     
     private let tableView: UITableView = {
        let table = UITableView()
@@ -23,6 +19,16 @@ class HomeController: UIViewController {
         return table
     }()
     
+    init(_ viewModel: HomeControllerViewModel = HomeControllerViewModel()) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +37,36 @@ class HomeController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
+        
+        self.viewModel.onCoinsUpdated = { [weak self] in
+            DispatchQueue.main.async {
+                self?.tableView.reloadData()
+            }
+        }
+        
+        self.viewModel.onErrorMessage = { [weak self] error in
+         
+            let alert = UIAlertController(title: nil, message: nil,
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel))
+            
+            DispatchQueue.main.async {
+                switch error {
+                    
+                case .serverError(let serverError):
+                    alert.title = "Server Error \(serverError.errorCode)"
+                    alert.message = serverError.errorMessage
+                case .unknown(let string):
+                    alert.title = "Error Fetching Coins"
+                    alert.message = string
+                case .decodingError(let string):
+                    alert.title = "Error Parsing Data"
+                    alert.message = string
+                }
+                self?.present(alert,animated: true)
+            }
+            
+        }
         
     }
 
@@ -59,7 +95,7 @@ class HomeController: UIViewController {
 
 extension HomeController: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return coins.count
+        return viewModel.coins.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -67,7 +103,7 @@ extension HomeController: UITableViewDelegate,UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let coin = coins[indexPath.row]
+        let coin = viewModel.coins[indexPath.row]
         cell.configure(with: coin)
         return cell
     }
@@ -79,7 +115,7 @@ extension HomeController: UITableViewDelegate,UITableViewDataSource {
         // чтоб при выборе ячейки она загоралась, а потом переставала
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let coin = coins[indexPath.row]
+        let coin = viewModel.coins[indexPath.row]
         let viewModel = ViewCryptoControllerViewModel(coin)
         let vc = ViewCryptoController(viewModel)
         navigationController?.pushViewController(vc, animated: true)
